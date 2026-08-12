@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-12 max-w-3xl mx-auto text-center">
+    <h1 class="text-4xl md:text-5xl font-serif font-bold text-mocha-900 mb-4">Encuentra tu grano ideal</h1>
+    <p class="text-mocha-700 text-lg mb-8">Explora perfiles de sabor, tuestes y orígenes para ampliar tu paladar.</p>
+    
+    <!-- Buscador Integrado -->
+    <form action="{{ url_for('index') }}" method="GET" class="flex max-w-xl mx-auto shadow-sm rounded-lg overflow-hidden border border-mocha-200 focus-within:ring-2 focus-within:ring-mocha-500 focus-within:border-mocha-500">
+        <div class="bg-white flex items-center px-4">
+            <i class="fa-solid fa-magnifying-glass text-mocha-400"></i>
+        </div>
+        <input type="text" name="q" value="{{ query }}" placeholder="Ej. Colombia, Chocolate, Claro..." 
+               class="flex-grow py-3 px-2 bg-white text-mocha-900 focus:outline-none placeholder:text-mocha-300">
+        <button type="submit" class="bg-mocha-800 text-white px-6 py-3 font-bold hover:bg-mocha-900 transition-colors">
+            Buscar
+        </button>
+    </form>
+</div>
+
+<!-- Cuadrícula de Cafés -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for coffee in coffees %}
+    <div class="bg-white border border-mocha-100 rounded-xl shadow-md shadow-mocha-900/5 hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden">
+        
+        <div class="p-6 flex-grow">
+            <div class="flex justify-between items-start mb-3">
+                <h2 class="text-xl font-serif font-bold text-mocha-950">{{ coffee.name }}</h2>
+                {% if coffee.id in saved_ids %}
+                    <span class="text-xs font-bold uppercase tracking-wider bg-mocha-100 text-mocha-800 px-2.5 py-1 rounded-full border border-mocha-200">
+                        <i class="fa-solid fa-bookmark mr-1"></i> Guardado
+                    </span>
+                {% endif %}
+            </div>
+            
+            <!-- Etiquetas de atributos -->
+            <div class="flex gap-2 mb-4">
+                <span class="text-xs font-bold text-mocha-700 bg-mocha-50 border border-mocha-200 px-2.5 py-1 rounded flex items-center gap-1">
+                    <i class="fa-solid fa-earth-americas opacity-70"></i> {{ coffee.origin }}
+                </span>
+                <span class="text-xs font-bold text-mocha-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded flex items-center gap-1">
+                    <i class="fa-solid fa-fire opacity-70 text-amber-600"></i> {{ coffee.roast }}
+                </span>
+            </div>
+            
+            <p class="text-mocha-800 text-sm font-bold mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-droplet text-mocha-400"></i> {{ coffee.flavor }}
+            </p>
+            <p class="text-mocha-600 text-sm leading-relaxed">{{ coffee.description }}</p>
+        </div>
+        
+        <!-- Sección de guardado (con fondo contrastante) -->
+        <div class="bg-mocha-50 p-5 border-t border-mocha-100">
+            <form action="{{ url_for('save_coffee') }}" method="POST" class="flex flex-col gap-3">
+                <input type="hidden" name="coffee_id" value="{{ coffee.id }}">
+                
+                <div class="flex justify-between items-center">
+                    <label class="text-sm font-bold text-mocha-800">Calificación:</label>
+                    <div class="text-yellow-500">
+                        <select name="rating" class="bg-white border border-mocha-200 text-mocha-900 text-sm rounded-md focus:ring-mocha-500 focus:border-mocha-500 p-1 font-bold cursor-pointer">
+                            <option value="5">5 Estrellas</option>
+                            <option value="4">4 Estrellas</option>
+                            <option value="3">3 Estrellas</option>
+                            <option value="2">2 Estrellas</option>
+                            <option value="1">1 Estrella</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <input type="text" name="notes" placeholder="Tus notas de cata (opcional)..." 
+                       class="w-full text-sm p-2.5 border border-mocha-200 rounded-md focus:ring-mocha-500 focus:border-mocha-500 outline-none">
+                
+                <button type="submit" class="w-full bg-mocha-800 text-white py-2.5 rounded-md text-sm font-bold hover:bg-mocha-950 transition-colors shadow-sm">
+                    <i class="fa-solid fa-plus mr-1"></i> Añadir a Colección
+                </button>
+            </form>
+        </div>
+
+    </div>
+    {% else %}
+    <div class="col-span-full py-16 text-center bg-white rounded-xl border border-mocha-200 border-dashed">
+        <i class="fa-solid fa-mug-empty text-5xl text-mocha-300 mb-4"></i>
+        <p class="text-xl font-serif text-mocha-800 mb-2">No encontramos ese café</p>
+        <p class="text-mocha-500">Intenta buscar con otros términos.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
